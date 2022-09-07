@@ -4,6 +4,7 @@ const app = express();
 
 app.use(express.json());
 
+
 /**
  *  Basic Phase 1 - Plain-text response
  *     Method: GET
@@ -11,6 +12,9 @@ app.use(express.json());
  *     Response: 1.0.0
  */
 // Your code here
+app.get("/version", (req, res) => {
+    res.send("1.0.0")
+})
 
 /**
  *  Basic Phase 2 - Route param and JSON response
@@ -24,7 +28,29 @@ app.use(express.json());
  *  combined with the id sent as a route parameter in the url
  */
 // Your code here
-
+const viewers = [
+    {
+        id: 1,
+        firstname: "Godwin",
+        lastname: "Opara",
+        birthdate: "31/07/1992",
+        favMovies: ["Extraction", "Merlin"]
+    },
+    {
+        id: 1,
+        firstname: "Kelechi",
+        lastname: "Opara",
+        birthdate: "18/08/1995",
+        favMovies: ["Baking", "Uncut"]
+    }
+]
+app.get("/viewers", (req, res) => {
+    res.json(viewers)
+})
+app.get("/viewers/:id", (req, res) => {
+    const viewer = viewers[req.params.id]
+    res.json(viewer)
+})
 /** Basic Phase 3 - Query params in URL
  *      Method: GET
  *      Route: /info
@@ -43,7 +69,18 @@ app.use(express.json());
  *          message required
  */
 // Your code here
-
+app.get("/info", (req, res) => {
+    const queries = req.query.message
+    try{
+        if(queries){
+            res.json(queries)
+        }else{
+            res.json("message required")
+        }
+    }catch(err){
+        res.status(404).json("error")
+    }
+})
 /**
  *  IMPORTANT: Scroll to the top for basic phases.
  *
@@ -77,7 +114,22 @@ app.use(express.json());
  *          {"id":98765432,"name":"Honey Sweet","year":1967,"isFavorite":false}
  */
 // Your code here
-
+const movies = [
+    {"id":7884906,"name":"Bash","year":2002,"isFavorite":true},
+    {"id":98765432,"name":"Honey Sweet","year":1967,"isFavorite":false}
+]
+app.get("/movies", (req, res) => {
+    res.json(movies)
+})
+app.post("/movies", (req, res) => {
+    const id = Math.floor(Math.random() * 1000)
+    const favorite = req.body.favorite ? true : false
+    const {name, year} = req.body
+    const movie = {id, name, year,  isFavorite : favorite}
+    movies.push(movie)
+    
+    res.json(movies)
+})
 /**
  *  Advanced Bonus Phase B - Research how to return static
  *                           files in a public folder
@@ -94,6 +146,7 @@ app.use(express.json());
  *      Test route: /logo.png
  */
 // Your code here
+app.use(express.static("public"))
 
 // DO NOT EDIT - Set port and listener
 const port = 5000;
